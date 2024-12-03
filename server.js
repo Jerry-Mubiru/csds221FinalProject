@@ -42,6 +42,21 @@ app.post('/applications', async (req, res) => {
   }
 });
 
+// Update application status
+app.put('/applications', async (req, res) => {
+  const { id, status } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE applications SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
